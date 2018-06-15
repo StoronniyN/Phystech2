@@ -1,0 +1,15 @@
+set terminal gif animate delay 10 size 700,600
+set output 'Lx7_spin.gif'
+set xlabel "x"
+set ylabel "y"
+set zlabel "z"
+set zrange [0:3]
+#set ticslevel 0
+stats 'spin' nooutput
+set xrange [-1:8]
+set yrange [-1:8]
+
+do for [i=1:int(STATS_blocks)] {
+   splot 'spin' index (i-1) using 1:2:3:4:5:6 with vectors filled head lw 3 lt rgb 'navy' notitle, 'data.txt' index (i-1) using 1:2:3:4 with points pt 7 ps 2 lt rgb 'orange-red' notitle
+
+}

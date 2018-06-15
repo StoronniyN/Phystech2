@@ -1,0 +1,8 @@
+set terminal png
+set size square
+set output 'plot_coord_sq.png'
+set xrange [-0.1:7.1]
+stats 'write_sq_5' nooutput
+stats 'write_sq_7' nooutput
+set yrange [-0.1:7.1]
+plot 'write_sq_5' with points ls 5 lt rgb 'orange-red' notitle, 'write_sq_7' with points ls 4 lt rgb 'black' notitle

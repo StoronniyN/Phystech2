@@ -1,0 +1,8 @@
+set xlabel "N"
+set ylabel "Mean squared deviation (MSD)"
+set terminal png size 1024,600
+set output 'MSD.png'
+stats 'MSD' nooutput
+set xrange [0:1000]
+set yrange [0.00000:0.05]
+plot 'MSD'  with lines title "MSD"  lw 1.5 lt rgb 'red'

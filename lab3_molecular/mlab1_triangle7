@@ -1,0 +1,1 @@
+gnuplot -c triangle7_plot && mirage plot_triangle7.png

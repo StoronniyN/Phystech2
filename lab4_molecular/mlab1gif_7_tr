@@ -1,0 +1,1 @@
+gnuplot -c animation_7_triangle && mirage Lx7_triangle.gif

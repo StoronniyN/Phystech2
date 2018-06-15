@@ -1,0 +1,6 @@
+set terminal png
+set output 'plot_square5.png'
+stats 'square5' nooutput
+set xrange [0:5]
+set yrange [-0.5:0.5]
+plot 'square5'  with lines 

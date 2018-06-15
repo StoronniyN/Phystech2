@@ -1,0 +1,6 @@
+set terminal png
+set output 'plot_pot_sigma.png'
+stats 'p_energy' nooutput
+set xrange [0:1.2]
+set yrange [-0.5:0.5]
+plot 'p_energy'  with lines 

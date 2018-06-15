@@ -1,0 +1,1 @@
+gnuplot -c temp && mirage plot_temperature.png

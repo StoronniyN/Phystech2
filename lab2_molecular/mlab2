@@ -1,0 +1,1 @@
+g++ -Wall lab2_dynamic.cpp -o lab2_dynamic && ./lab2_dynamic

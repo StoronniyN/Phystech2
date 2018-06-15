@@ -1,0 +1,15 @@
+./run - run program to calculate SIGMA and MINIMAL ENERGY of the squared and triangled system (sourde code file: lab2.cpp)
+
+./mlab2 - run dynamic of the system (sourde code file: lab2_dynamic.cpp)
+
+./mlab2plot - plot energy of the system (source: energy)
+
+./mlab2gif_7_tr, ./mlabgif_7, etc - create a gif (source: animation, animation_7, etc)
+
+./mlab2coord_5, ./mlab2coord_7 - create a png that shows an initial state of the squared and triangles systems
+
+./mlab2part - create a png that shows trajectory of a particle (source: part)
+
+./mlab_5, ./mlab_7 - create a png that shows graphs ENERGY/SIGMA for Lx=5, 7
+
+

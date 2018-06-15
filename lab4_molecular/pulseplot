@@ -1,0 +1,10 @@
+set xlabel "N"
+set ylabel "Pulse"
+set terminal png  size 1024,600
+set output 'pulse.png'
+stats 'pulse' nooutput
+set xrange [0:400000]
+set yrange [-0.01:0.01]
+
+plot 'pulse'  with lines title "pulse" lw 1.5 lt rgb 'red'
+

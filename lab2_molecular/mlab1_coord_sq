@@ -1,0 +1,1 @@
+gnuplot -c coord_sq  && mirage plot_coord_sq.png

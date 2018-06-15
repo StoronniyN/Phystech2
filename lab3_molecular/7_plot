@@ -1,0 +1,11 @@
+set terminal png
+set xrange [0:2]
+set yrange [-1:0]
+set xlabel "sigma"
+set ylabel "Energy"
+set output 'plot_7.png'
+stats 'square7' nooutput
+stats 'triangle7' nooutput
+#set xrange [0.2:1.4]
+#set yrange [-0.35:0]
+plot 'square7'  with lines title "square L_x=7", 'triangle7' with lines title "triangle L_x=7" 

@@ -1,0 +1,1 @@
+gnuplot -c square5_plot && mirage plot_square5.png

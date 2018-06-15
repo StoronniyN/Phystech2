@@ -1,0 +1,9 @@
+set terminal gif animate delay 10 size 600,600
+set output 'Lx7_triangle.gif'
+stats 'data.txt' nooutput
+set xrange [0:7]
+set yrange [0:6.06217782649]
+
+do for [i=1:int(STATS_blocks)] {
+    plot 'data.txt' index (i-1) using 1:2 with points pt 7 ps 3 lt rgb 'navy' notitle
+}

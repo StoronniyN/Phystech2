@@ -1,0 +1,12 @@
+#set grid
+set xlabel "N"
+set ylabel "Energy"
+set key right center
+set terminal png size 1024,600
+set output 'plot_energy_control.png'
+stats 'potenergy' nooutput
+stats 'kinenergy' nooutput
+stats 'fullenergy' nooutput
+set xrange [0:300000]
+set yrange [-1:30]
+plot 'kinenergy'  with lines title "kinetic energy" lw 1.8 lt rgb 'forest-green','potenergy' with lines title "potential energy"  lw 1.8 lt rgb 'blue','fullenergy' with lines title "total energy" lw 1.8 lt rgb 'black'

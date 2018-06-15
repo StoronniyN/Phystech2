@@ -1,0 +1,6 @@
+set terminal png
+set output 'plot_triangle5.png'
+stats 'triangle5' nooutput
+set xrange [0:1.2]
+set yrange [-0.5:0.5]
+plot 'triangle5'  with lines 

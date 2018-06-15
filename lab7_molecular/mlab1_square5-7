@@ -1,0 +1,1 @@
+gnuplot -c square5-7_plot && mirage plot_square5-7.png

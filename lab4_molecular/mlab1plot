@@ -1,0 +1,1 @@
+gnuplot -c energy  && mirage plot_energy_control.png 

@@ -1,0 +1,1 @@
+gnuplot -c avtemp && mirage plot_temperature_av.png

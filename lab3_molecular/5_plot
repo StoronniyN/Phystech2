@@ -1,0 +1,12 @@
+set terminal png
+set xrange [0:1]
+set yrange [-1:0]
+set xlabel "sigma"
+set ylabel "Energy"
+set output 'plot_5.png'
+stats 'square5' nooutput
+stats 'triangle5' nooutput
+#set xrange [0.2:1.4]
+#set yrange [-0.35:0]
+
+plot 'square5'  with lines title "square L_x=5", 'triangle5' with lines title "triangle L_x=5" 

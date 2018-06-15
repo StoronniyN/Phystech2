@@ -1,0 +1,1 @@
+gnuplot -c coord_tr  && mirage plot_coord_tr.png

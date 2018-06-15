@@ -1,0 +1,59 @@
+% Шаблон (версия от 15.02.2016) предназначен 
+% для использования студентами каф. ПМиИ СамГТУ 
+% при оформлении отчетов по лабораторным работам. 
+% Для настройки пакета listigs использовался материал 
+% статьи Михаила Конника aka virens
+% <http://mydebianblog.blogspot.ru/2012/12/latex.html>
+% Copyright (c) 2016 by Mikhail Saushkin (msaushkin@gmail.com) 
+% All rights reserved except the rights granted by the
+% Creative Commons Attribution 4.0 International Licence
+% <https://creativecommons.org/licenses/by/4.0/>
+% Свежая версия шаблона здесь <https://www.overleaf.com/read/sqvxbnhgxxdm>
+\documentclass[14pt,a4paper,report]{ncc}
+\usepackage[a4paper, mag=1000, left=2.5cm, right=1cm, top=2cm, bottom=2cm, headsep=0.7cm, footskip=1cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[colorlinks]{hyperref}
+\usepackage{listings} 
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\DeclareCaptionFont{white}{\color{white}} %% это сделает текст заголовка белым
+%% код ниже нарисует серую рамочку вокруг заголовка кода.
+\usepackage{color} %% это для отображения цвета в коде
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+\lstset{% Собственно настройки вида листинга
+inputencoding=utf8, extendedchars=\true, keepspaces = true, % поддержка кириллицы и пробелов в комментариях
+language=C++,            % выбор языка для подсветки (здесь это Pascal)
+numberstyle =\tiny
+basicstyle=\small\sffamily, % размер и начертание шрифта для подсветки кода
+keywordstyle =\color{ForestGreen},
+numbers=left,               % где поставить нумерацию строк (слева\справа)
+numberstyle=\tiny,          % размер шрифта для номеров строк
+stepnumber=1,               % размер шага между двумя номерами строк
+numbersep=5pt,              % как далеко отстоят номера строк от подсвечиваемого кода
+backgroundcolor=\color{white}, % цвет фона подсветки - используем \usepackage{color}
+showspaces=false,           % показывать или нет пробелы специальными отступами
+showstringspaces=false,     % показывать или нет пробелы в строках
+showtabs=false,             % показывать или нет табуляцию в строках
+frame=single,               % рисовать рамку вокруг кода
+tabsize=2,                  % размер табуляции по умолчанию равен 2 пробелам
+captionpos=t,               % позиция заголовка вверху [t] или внизу [b] 
+breaklines=true,            % автоматически переносить строки (да\нет)
+breakatwhitespace=false,    % переносить строки только если есть пробел
+escapeinside={\%*}{*)}      % если нужно добавить комментарии в коде
+}
+
+\begin{document}
+% Переоформление некоторых стандартных названий
+%\renewcommand{\chaptername}{Лабораторная работа}
+\def\contentsname{Содержание}
+
+% Оформление титульного листа
+\begin{titlepage}
+\begin{center}
+\textsc{ФГОУ ВО Уральский Федеральный Университет \\ имени первого Президента России Б.Н.Ельцина\\[5mm]
+Фи�

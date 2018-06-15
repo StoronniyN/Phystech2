@@ -1,0 +1,6 @@
+set terminal png
+set output 'plot_square7.png'
+stats 'square7' nooutput
+set xrange [0:5]
+set yrange [-0.5:0.5]
+plot 'square7'  with lines 

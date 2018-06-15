@@ -1,0 +1,1 @@
+gnuplot -c 7_plot && mirage plot_7.png

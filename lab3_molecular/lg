@@ -1,0 +1,2 @@
+g++ -Wall 1.cpp -o 1 && ./1 && gnuplot -c lgplot && mirage plot_lgpotential.png 
+

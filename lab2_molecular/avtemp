@@ -1,0 +1,6 @@
+set terminal png
+set output 'plot_temperature_av.png'
+stats 'avtemperature' nooutput
+set xrange [90:300000]
+set yrange [0:0.05]
+plot 'avtemperature'  with lines 

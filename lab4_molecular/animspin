@@ -1,0 +1,10 @@
+set terminal gif animate delay 10 size 600,600
+set output 'Lx7_spin.gif'
+stats 'spin' nooutput
+set xrange [-2:10]
+set yrange [-2:10]
+
+do for [i=1:int(STATS_blocks)] {
+    plot 'spin' index (i-1) using 1:2:3:4 with vectors filled head lw 3 lt rgb 'navy' notitle, 'data.txt' index (i-1) using 1:2 with points pt 7 ps 3 lt rgb 'navy' notitle
+
+}

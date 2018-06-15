@@ -1,0 +1,1 @@
+gnuplot -c animation_5 && mirage Lx5.gif
