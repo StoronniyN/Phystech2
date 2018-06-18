@@ -1,0 +1,103 @@
+-------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code.. Per user-direction, the job has been aborted.
+-------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[25690,1],0]
+  Exit code:    2
+--------------------------------------------------------------------------
+
+   Hello! It is Heisenberg 3D written by Kashin I. V.
+     Current version is 19 apr 2018 - MaxFn 10^6  
+
+
+   Number of spins:   20
+
+   Magnetic field:  0.100 eV, Z-directed
+
+   Energy coefficient:      1.000
+
+   Number of steps:     1000
+
+   Full output stream   
+
+   Debug mode disabled   
+
+   Absolute values: 
+     1   5.000
+     2   5.000
+     3   1.000
+     4   1.000
+     5   1.000
+     6   1.000
+     7   1.000
+     8   1.000
+     9   1.000
+    10   1.000
+    11   1.000
+    12   1.000
+    13   1.000
+    14   1.000
+    15   1.000
+    16   1.000
+    17   1.000
+    18   1.000
+    19   1.000
+    20   1.000
+
+   Exchange interactions (eV):   
+     1     1   3     -1.000000
+     2     1   5     -1.000000
+     3     1   7     -1.000000
+     4     1   9     -1.000000
+     5     1  11     -1.000000
+     6     3   5      1.000000
+     7     5   7      1.000000
+     8     7   9      1.000000
+     9     9  11      1.000000
+    10     2   4     -1.000000
+    11     2   6     -1.000000
+    12     2   8     -1.000000
+    13     2  10     -1.000000
+    14     2  12     -1.000000
+    15     4   6      1.000000
+    16     6   8      1.000000
+    17     8  10      1.000000
+    18    10  12      1.000000
+    19     1  13     -1.000000
+    20    13  14     -1.000000
+    21    13  15     -1.000000
+    22    15  16     -1.000000
+    23    15  17     -1.000000
+    24    17  18     -1.000000
+    25    17  19     -1.000000
+    26    19  20     -1.000000
+    27    19   2     -1.000000
+
+   Frozen Spins configuration                          (No., ID, Long, Trans): 
+     1     1      0.000000      0.000000
+
+   Fitting Spins (No., ID): 
+     1     2
+     2     3
+     3     4
+     4     5
+     5     6
+     6     7
+     7     8
+     8     9
+     9    10
+    10    11
+    11    12
+    12    13
+    13    14
+    14    15
+    15    16
+    16    17
+    17    18
+    18    19
+    19    20
+
