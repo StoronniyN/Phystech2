@@ -1,0 +1,13 @@
+#set grid
+set xlabel "N Steps"
+set ylabel "Time, s"
+set key top center
+set terminal png size 1024,600
+set output 'time_job.png'
+stats 'time4' nooutput
+stats 'time2' nooutput
+stats 'time1' nooutput
+set xrange [0:10000]
+set yrange [0:130]
+plot 'time4_job' with lines title "4 threads"  lw 1.8 lt rgb 'blue', 'time2_job' with lines title "2 threads"  lw 1.8 lt rgb 'orange-red', 'time1_job' with lines title "1 thread"  lw 1.8 lt rgb 'sea-green'
+
