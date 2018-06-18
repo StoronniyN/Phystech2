@@ -13,13 +13,7 @@
       integer ierror
       integer step_end, step_begin
       integer h
-      
-      !master = 0
-      !tag=1234
-      !count=1
-
-        ! ------------------------------
-
+      double precision time_begin, time_end
 ! ------------------------------
       integer N_Spins, N_Couples
       
@@ -73,16 +67,13 @@
       count=1
 
 !---------START MPI ------------
-      !integer ierror
       call MPI_INIT(ierror)
       call MPI_COMM_SIZE(MPI_COMM_WORLD, num_of_procs, ierror)
       call MPI_COMM_RANK(MPI_COMM_WORLD, myid, ierror)
-
-!!!!!!! 15.06.18 00:21
+      time_begin=MPI_WTIME(ierror)
+! ------------------------------
+      
       if (myid.eq.master) then ! if1
-      !endif !if1
-!!!!!!! 15.06.18 00:21
-
 ! --- Welcoming message ---
       write(*,*)
       write(*,*) '  Hello! It is Heisenberg 3D written by Kashin I. V.'
@@ -96,12 +87,11 @@
       call system('rm ./Output/*')
       write(*,*)
 ! --------------------------------------
-
-!!!!!!! 15.06.18 00:21
-      !if (myid.eq.1) then ! if1
       endif !if1
-!!!!!!! 15.06.18 00:21
       
+!------------------
+      open(unit=12, file = './Output/time')  
+      open(unit=13, file = './Output/timei')    
 ! ==== Lets read the parameters of the 3D Heisenberg model ====
 ! --- The number of spins and its absolute values ---
       open(unit = 1, file = './Input/Basic', status = 'old')
@@ -119,10 +109,6 @@
       read(1, *) debug
 !-----renewal N_Steps
       N_Steps=(N_steps/num_of_procs)*num_of_procs+num_of_procs
-!!!!!!! 15.06.18 00:21
-      !if (myid.eq.1) then ! if1
-      !endif !if1
-!!!!!!! 15.06.18 00:21
 
 
 
@@ -136,9 +122,7 @@
       enddo !i
       close(1)
       
-!!!!!!! 15.06.18 00:22
-      if (myid.eq.master) then ! if2
-!!!!!!! 15.06.18 00:21 END  
+      if (myid.eq.master) then ! if2 
  
       write(*, '("   Number of spins: ", i4)') N_Spins
       write(*,*)
@@ -180,10 +164,7 @@
       write(*,*)
 ! -----------------------------------------------
 
-
-!!!!!!! 15.06.18 00:32
       endif !if2
-!!!!!!! 15.06.18 00:32 END 
 
 ! --- Heisenberg exchange interactions -----------------------
       open(unit = 2, file = './Input/Exchange', status = 'old')
@@ -233,7 +214,7 @@
        enddo !i
        close(3)
       
-      !if (myid.eq.master) then
+      if (myid.eq.master) then
        write(*,*) '  Frozen Spins configuration
      & (No., ID, Long, Trans): '
        do i = 1, N_Frozen_Spins
@@ -242,6 +223,7 @@
      &                               Frozen_Spin_Conf(i, 2)
        enddo !i
        write(*,*)
+      endif
       else
        close(3)
        write(*,*) '  No Frozen Spins  '
@@ -272,6 +254,7 @@
         Fitting_Spin_NumByID(i) = Fit
        endif !If Fitting
       enddo !i
+      if (myid.eq.master) then
       if (Fit.ne.N_Fitting_Spins) stop 'Fit Initiation Error'
       
       if (N_Frozen_Spins.gt.0 .or. debug.gt.0) then 
@@ -281,6 +264,7 @@
        enddo !i
        write(*,*)
       endif !Only if we have frozen spins (or debug mode)
+      endif
 ! -----------------------------------------
 
 
@@ -294,29 +278,6 @@
       N_States = 0
 ! ------------------------------------
 
-! --- Create output files ----
-!      open( unit = 4,
-!     &      file = './Output/Longitudinal',
-!     &      status = 'replace' )
-!     
-!      open( unit = 5,
-!     &      file = './Output/Transverse',
-!     &      status = 'replace' )
-!     
-!      open( unit = 8,
-!     &      file = './Output/States_Guide',
-!     &      status = 'replace' )
-!     
-!      if (debug.gt.0) then
-!       open( unit = 101,
-!     &       file = './Output/Initial_Configurations',
-!     &       status = 'replace' )
-!     
-!       write(101, *) '-----------------------------------------'
-!       write(101, *) '     No. | Longitudinal | Transverse  '
-!       write(101, *) '-----------------------------------------'
-!      endif !debug
-! -----------------------------
 
 
 
@@ -336,20 +297,14 @@
       call plant_random_seed
 ! ---------------------------
 
-!-----------SPOILED
-      !endif ! if3
-
-
-!-----------END-SPOILED
 
 ! -------- Main Step cycle ------------------
 
        h = N_Steps/num_of_procs
        step_end = (myid+1)*h
        step_begin = step_end - h + 1 
-      do step = step_begin, step_end !! step_begin_0=1, step_end_0=N_steps/4
-      ! step_begin_1=step_end_0+1; 
-
+      do step = step_begin, step_end
+      
 ! --- Set the initial chaotic configuration ------
        call random_number(Conf)
 ! ++++ Longitudinal ++++
@@ -364,19 +319,6 @@
         Conf(Frozen_Spin(i), 2) = Frozen_Spin_Conf(i, 2)
        enddo !i
 ! ----------------------------------------
-
-! --- Write the initial configuration into file if requested ---
-!      if (debug.gt.0) then
-!       write(101, '("  Configuration No. ", i4)') step
-!       write(101, *) '=========================='
-!       do i = 1, N_Spins
-!        write(101, '(i8, f12.1, f14.1)') 
-!     &        i, Conf(i, 1) * 180.d0 / Pi,
-!     &           Conf(i, 2) * 180.d0 / Pi
-!       enddo !i
-!       write(101, *) '-----------------------------------------'
-!      endif !debug
-! --------------------------------------------------------------
       
 ! --- Looking for the Energy Minimum ---------
        N_Adjusting_Parameters = 2 * N_Fitting_Spins
@@ -389,11 +331,6 @@
      &      S_Value, Exchange, Couple, Conf,
      &      Hmag_Dir, Hmag, Energy )
 ! --------------------------------------------
-
-!        print*, '          '
-!        print*, 'node', myid, 'Energy = ', 
-!     & Energy
-
 
 ! --- Convert the Result into Degrees ---
        Conf = Conf * 180.d0 / Pi
@@ -442,14 +379,6 @@
      &      N_States, N_Steps, Spectrum, myid, num_of_procs, step)
 ! ----------------------------------------------
 
-
-
-! --- Write the output line ---------------
-! SPOIL
-       
-! ENDSPOIL
-
-       
        
 ! -----------------------------------------
       enddo !step
@@ -509,11 +438,14 @@
       write(*,*)
       endif 
 ! --------------------------
-!---- I HAVE SPOILED EVERYTHING
-    
+      time_end=MPI_WTIME(ierror)
+      print*,time_end-time_begin, 'num_of_procs = ', num_of_procs
+      write(12, *)N_Steps, time_end-time_begin
+      write(13, *)time_end-time_begin
+      close(12)
+      close(13)
       call MPI_FINALIZE(ierror)
       stop
-!---- I HAVE SPOILED EVERYTHING END
 
       end
 ! =======================================================================
@@ -582,13 +514,11 @@
       if (myid.ne.master) then !1.0
          call MPI_SEND(Energy, 1, MPI_DOUBLE_PRECISION, master, tag1,
      & MPI_COMM_WORLD, ierror)
-      print*, myid, 'sent to ', master, ' Energy = ', Energy
          call MPI_RECV
      & (New_or_not, 1, MPI_INTEGER, master, tag2,
      & MPI_COMM_WORLD, status, ierror)
-      print*, myid, 'received from ', master, ' NewOrNot=', New_or_not
       endif  !1.0
-      !else
+      
       if (myid.eq.master) then !2.0
         do current_id= num_of_procs - 1, 0, -1
             if (current_id.ne.master) then !2.1
@@ -596,9 +526,6 @@
      &            Energy_current, 1, MPI_DOUBLE_PRECISION,
      &            current_id, tag1,
      &            MPI_COMM_WORLD, status, ierror)
-                  print*, myid, 'received from ',
-     &            current_id ,' Energy =  ', 
-     & Energy_current
             else
                 Energy_current = Energy
             endif !2.1
@@ -613,7 +540,7 @@
 ! -------------------------------------------------
 
 ! --- Treat the new one ---------------------- 
-      if (New_or_not.eq.1) then 
+      if (New_or_not.eq.1) then !1
        do Place = 1, N_States
         if (Energy.lt.Spectrum(Place)) exit
        enddo !Place
@@ -635,13 +562,10 @@
      &          (New_or_not, count, 
      &          MPI_INTEGER, current_id, tag2,
      &          MPI_COMM_WORLD, ierror)
-      print*, myid, 'sent to ', current_id, ' NewOrNot=', New_or_not
-!                print*, 'node', current_id, ' sent NEWORNOT:',
-!     &            New_or_not, ' to ', 
-!     &            master
            endif !2.2
         enddo
-      endif
+      endif !1
+      
 !-----------STILL MPI-------------
 
        if (New_or_not.eq.1) then
