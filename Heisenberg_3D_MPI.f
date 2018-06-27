@@ -45,6 +45,8 @@
       double precision Energy_Coefficient
       integer N_States
       double precision, allocatable :: Spectrum(:)
+      !---------- MPI
+      integer, allocatable :: array_of_steps(:)
 ! ------------------------------
       integer Lessened_output
       integer Write_State_or_not
@@ -108,7 +110,7 @@
       read(1, *) ! Debug mode
       read(1, *) debug
 !-----renewal N_Steps
-      N_Steps=(N_steps/num_of_procs)*num_of_procs+num_of_procs
+      N_Steps=(N_Steps/num_of_procs)*num_of_procs+num_of_procs
 
 
 
@@ -278,6 +280,9 @@
       N_States = 0
 ! ------------------------------------
 
+! --- MPI Allocate the array_of_steps array ---
+      allocate(array_of_steps(N_Steps))
+      array_of_steps = 0
 
 
 
@@ -376,24 +381,26 @@
        call State_Analysis
      &    ( Energy, N_Spins, Conf, S_Value, Hmag_Dir,
      &      Lessened_output, Write_State_or_not,
-     &      N_States, N_Steps, Spectrum, myid, num_of_procs, step)
+     &      N_States, N_Steps, Spectrum, myid, num_of_procs, step,
+     & array_of_steps)
 ! ----------------------------------------------
 
        
 ! -----------------------------------------
       enddo !step
 ! ----------------------------------------------------
-       if (New_or_not.eq.1) then !Print the state
+      ! if (New_or_not.eq.0) then !Print the state
 ! --- Write out the Spectrum into file ------
       open( unit = 9,
      &      file = './Output/Spectrum',
      &      status = 'replace' )
      
-      write(9, *) '  State (rel. units) | State(meV) |
+      write(9, *) 'Step | State (rel. units) | State(meV) |
      & Excitation(meV) | Excitation(K)'
       write(9, *)
       do i = 1, N_States
-       write(9, '(3f20.6, f25.3)') 
+       write(9, '(I5, 3f20.6, f25.3)') 
+     &    array_of_steps(i),  
      &    Spectrum(i),
      &    Spectrum(i) * Energy_Coefficient,
      &  ( Spectrum(i) - Spectrum(1) ) * Energy_Coefficient,
@@ -401,14 +408,9 @@
      &                                  11.604522167676d0
       enddo !i
       close(9)
-!!!! SSPOILED
-      endif  !if (New_or_not.eq.1) Print the state 
-!!! SPOILED END
+      !endif  !if (New_or_not.eq.1) Print the state 
 ! ---------------------------------
 
-       if (New_or_not.eq.1) then !Print the state
-      endif  !if (New_or_not.eq.1) Print the state 
-       
        
        
 ! --- Close the output files ---
@@ -432,14 +434,14 @@
       deallocate(Conf)
       deallocate(Spectrum)
 ! --------------------------
-      if (New_or_not.eq.1) then !Print the state
+      if (myid.eq.master) then !Print the state
 ! --- Final message --------
       write(*,*) '  All done. Have a nice day!'
       write(*,*)
       endif 
 ! --------------------------
       time_end=MPI_WTIME(ierror)
-      print*,time_end-time_begin, 'num_of_procs = ', num_of_procs
+!      print*,time_end-time_begin, 'num_of_procs = ', num_of_procs
       write(12, *)N_Steps, time_end-time_begin
       write(13, *)time_end-time_begin
       close(12)
@@ -452,7 +454,8 @@
       subroutine State_Analysis
      &         ( Energy, N_Spins, Conf, S_Value, Hmag_Dir,
      &           Lessened_output, Write_State_or_not,
-     &           N_States, N_Steps, Spectrum, myid, num_of_procs, step)
+     &           N_States, N_Steps, Spectrum, myid, num_of_procs, step,
+     &            array_of_steps)
       implicit none
       include 'mpif.h'
 ! ------------------------------
@@ -485,9 +488,11 @@
       character*5 Nst5
       integer i
       integer master
-      integer tag1, tag2, count, ierror, myid
-      integer num_of_procs, current_id, step
+      integer tag1, tag2, tag3, count, ierror, myid
+      integer num_of_procs, current_id, step, step_current
       integer status(MPI_STATUS_SIZE)
+      integer tag_step1, tag_step2, tag_step3, tag
+      integer array_of_steps(N_Steps)
       double precision Rad
 ! ------------------------------
 
@@ -495,6 +500,7 @@
       master = 0
       tag1 = 1234
       tag2 = 4321
+      tag = 1111
       count = 1
       
 ! --- Degrees into Radians ---
@@ -510,25 +516,54 @@
 ! --------------------------------------------------------
 
 ! --- Lets find out novelty of the Energy value ---
-!-----------MPI-------------
+!---------------------------------MPI---------------------------------!
       if (myid.ne.master) then !1.0
-         call MPI_SEND(Energy, 1, MPI_DOUBLE_PRECISION, master, tag1,
+!---------------------------------------------------------------------!
+!       Send Energy, if myid=1, 2, 3, ... , num_of_procs              !
+!---------------------------------------------------------------------!
+         call MPI_SEND(Energy, count, MPI_DOUBLE_PRECISION, master, 
+     & tag1, MPI_COMM_WORLD, ierror)
+!---------------------------------------------------------------------!
+!         Send step, if myid=1, 2, 3, ... , num_of_procs              !
+!---------------------------------------------------------------------!     
+         call MPI_SEND(step, count, MPI_INTEGER, master, tag,
      & MPI_COMM_WORLD, ierror)
+!---------------------------------------------------------------------!
+!      Wait for New_or_not, if myid=1, 2, 3, ... , num_of_procs       !
+!---------------------------------------------------------------------! 
          call MPI_RECV
-     & (New_or_not, 1, MPI_INTEGER, master, tag2,
+     & (New_or_not, count, MPI_INTEGER, master, tag2,
      & MPI_COMM_WORLD, status, ierror)
+!---------------------------------------------------------------------! 
       endif  !1.0
-      
+!---------------------------------------------------------------------!
+
+!---------------------------------------------------------------------!     
       if (myid.eq.master) then !2.0
+!----------------------------------DO--------------------------------!      
         do current_id= num_of_procs - 1, 0, -1
-            if (current_id.ne.master) then !2.1
+!---------------------------------------------------------------------!
+            if (current_id.ne.master) then    !2.1
+!---------------------------------------------------------------------!
+!    Wait for Energy, if myid=0 from 1, 2, 3, ... , num_of_procs      !
+!---------------------------------------------------------------------! 
                 call MPI_RECV(
-     &            Energy_current, 1, MPI_DOUBLE_PRECISION,
+     &            Energy_current, count, MPI_DOUBLE_PRECISION,
      &            current_id, tag1,
      &            MPI_COMM_WORLD, status, ierror)
+!---------------------------------------------------------------------!
+!    Wait for step, if myid=0 from 1, 2, 3, ... , num_of_procs        !
+!---------------------------------------------------------------------! 
+                call MPI_RECV(
+     &            step_current, count, MPI_INTEGER,
+     &            current_id, tag,
+     &            MPI_COMM_WORLD, status, ierror)
+!---------------------------------------------------------------------!
             else
                 Energy_current = Energy
-            endif !2.1
+                step_current = step
+            endif                              !2.1
+!---------------------------------------------------------------------!
             
           New_or_not = 1
           do st = 1, N_States
@@ -541,8 +576,9 @@
 
 ! --- Treat the new one ---------------------- 
       if (New_or_not.eq.1) then !1
+ 
        do Place = 1, N_States
-        if (Energy.lt.Spectrum(Place)) exit
+        if (Energy_current.lt.Spectrum(Place)) exit
        enddo !Place
        
        if (Place.lt.N_States + 1) then
@@ -551,8 +587,17 @@
         enddo !st
        endif !Shift all higher states
        
-       Spectrum(Place) = Energy !Establish the new state
+       Spectrum(Place) = Energy_current !Establish the new state
        N_States = N_States + 1
+
+      !--- Have a look at steps
+
+            array_of_steps(Place) = step_current
+            print*, 'step = ', step_current, 'Place = ', 
+     & Place, ' id = ', myid   
+  
+       !--- Have a look at steps (END)
+       
       endif    
        if (Place.eq.1) Write_State_or_not = 1 
 !-----------update spectr end       
@@ -564,10 +609,11 @@
      &          MPI_COMM_WORLD, ierror)
            endif !2.2
         enddo
-      endif !1
+!----------------------------------DONE------------------------------!
       
-!-----------STILL MPI-------------
+      endif !1
 
+!-----------STILL MPI-------------
        if (New_or_not.eq.1) then
 ! +++++ Write the configuration into files +++++++
        if (Lessened_output.eq.0 .or. Place.eq.1) then
@@ -632,7 +678,7 @@
         write(6, *) '     No. | Longitudinal | Transverse |
      & Magnetic Moment   '
         write(6, *)
-       
+      ! endif !!!!!!!!!!!!!!!
         Total_Mag_Moment = 0.d0
         do i = 1, N_Spins
          if (Hmag_Dir.eq.1)
@@ -663,7 +709,7 @@
         close(7)
        
         write(8, '("State No.", i8, "  |  Energy = ", f20.6)')
-     &              N_States, Energy !!! STEP! 
+     &              N_States, Energy!!! STEP! 
      
        endif !Only if it is the lowest one or Lessened mode is off
 ! ++++++++++++++++++++++++++++++++++++++++++++++++
